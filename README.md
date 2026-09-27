@@ -159,27 +159,11 @@ grafico_interacao_fatorial(
 )
 ```
 
-## Aplicativo Shiny (Ranova)
+## Aplicativo Shiny
 
-O pacote inclui um aplicativo Shiny, no padrão visual dos apps MelonMundi, para usar o `ranova` sem programar.
-
-```r
-install.packages(c("shiny", "rhandsontable", "readxl", "writexl"))
-ranova::executar_app()
-```
-
-Recursos:
-
-- Entrada de dados de três formas: **Digitar** (o app monta a planilha com todas as combinações de tratamentos a partir dos fatores, níveis, repetições/blocos e variáveis resposta), **Importar** (`.xlsx`, `.xls` ou `.csv`, com escolha da aba) ou **Exemplo**.
-- Planilha editável que aceita colar dados do Excel (Ctrl+V), inserir/remover linhas e vírgula ou ponto como separador decimal.
-- Sugestão automática de bloco, fatores e variáveis resposta a partir das colunas importadas.
-- DIC ou DBC com 1, 2 ou 3 fatores e uma ou mais variáveis resposta.
-- Resultados em abas: ANOVA (três formatos, com CV e leitura rápida das interações significativas), Pressupostos (Shapiro-Wilk, Levene e gráficos de resíduos), Médias com letras, Interação (desdobramento) e Gráficos (médias e interação, com download em PNG).
-- Relatório HTML com todas as tabelas e gráficos, pronto para imprimir ou salvar em PDF.
-
-Os dados digitados são usados apenas durante a sessão ativa; o app não grava dados em banco, arquivos, cookies ou armazenamento do navegador.
-
-O código do app fica em `inst/app/` (`app.R`, `global.R`, `ui.R`, `server.R`, `www/`) e também pode ser publicado diretamente no Shiny Server apontando para essa pasta, desde que o pacote `ranova` esteja instalado no servidor.
+O aplicativo **Ranova** usa este pacote para fazer as analises sem programar
+(digitar ou importar dados, ANOVA, medias, desdobramento, graficos e relatorio).
+Ele vive em repositorio proprio: [Marlenildo/ranova-app](https://github.com/Marlenildo/ranova-app).
 
 ## Dicionario de variaveis (opcional)
 
@@ -244,10 +228,6 @@ Opcoes de `label_type`: `"var"`, `"sigla"`, `"label"` ou `"description"`.
 - `grafico_multiplas_variaveis()`
 - `grafico_medias_fatorial()`
 - `grafico_interacao_fatorial()`
-
-### Aplicativo
-
-- `executar_app()`
 
 ### Utilitarios
 

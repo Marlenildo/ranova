@@ -1,13 +1,9 @@
 # Changelog
 
-## [0.5.0] - 2026-09-27
-
-### Added
-- Aplicativo Shiny Ranova em `inst/app/`, executado com `executar_app()`: digitação com planilha gerada a partir dos fatores, importação de Excel/CSV, DIC ou DBC com 1 a 3 fatores, ANOVA, pressupostos, médias com letras, desdobramento da interação, gráficos e relatório HTML.
-- `shiny`, `rhandsontable`, `readxl` e `writexl` em `Suggests`.
+## [0.4.5] - 2026-09-27
 
 ### Changed
-- `anova_fatorial_qm_tabela()`: a linha de resíduos passa a se chamar `Resíduo` e a linha do CV deixa a coluna GL em branco em vez de `NA`.
+- `anova_fatorial_qm_tabela()`: a linha de residuos passa a se chamar `Resíduo` e a linha do CV deixa a coluna GL em branco em vez de `NA`.
 
 ## [0.4.4] - 2026-02-12
 
