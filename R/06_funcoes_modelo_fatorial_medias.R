@@ -202,7 +202,7 @@ anova_fatorial_qm_tabela <- function(
   anova_ref <- summary(modelo_ref)[[1]]
   
   tabela <- data.frame(
-    FV = rownames(anova_ref),
+    FV = sub("^Residuals$", "Res\u00edduo", trimws(rownames(anova_ref))),
     GL = anova_ref$Df,
     stringsAsFactors = FALSE
   )
@@ -272,7 +272,7 @@ anova_fatorial_qm_tabela <- function(
     (sqrt(qm_erro) / media) * 100
   })
   
-  linha_cv <- c("CV (%)", NA)
+  linha_cv <- c("CV (%)", "")
   
   if (formato == "f_p_colunas") {
     cv_expandido <- as.vector(rbind(sprintf("%.2f", cv_valores), rep("", length(cv_valores))))

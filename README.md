@@ -159,6 +159,12 @@ grafico_interacao_fatorial(
 )
 ```
 
+## Aplicativo Shiny
+
+O aplicativo **Ranova** usa este pacote para fazer as analises sem programar
+(digitar ou importar dados, ANOVA, medias, desdobramento, graficos e relatorio).
+Ele vive em repositorio proprio: [Marlenildo/ranova-app](https://github.com/Marlenildo/ranova-app).
+
 ## Dicionario de variaveis (opcional)
 
 Para usar rotulos amigaveis nas tabelas/graficos:

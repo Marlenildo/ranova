@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.5] - 2026-09-27
+
+### Changed
+- `anova_fatorial_qm_tabela()`: a linha de residuos passa a se chamar `Resíduo` e a linha do CV deixa a coluna GL em branco em vez de `NA`.
+
 ## [0.4.4] - 2026-02-12
 
 ### Changed
