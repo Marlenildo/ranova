@@ -1,6 +1,6 @@
 Package: ranova
 Title: Analise De Variancia Para Experimentos Em DIC e DBC
-Version: 0.4.4
+Version: 0.5.0
 Authors@R: 
     person(given = "Marlenildo",
            family = "Ferreira Melo",
@@ -10,6 +10,8 @@ Description: Biblioteca para analise de variancia (ANOVA) em experimentos
     com suporte a delineamento inteiramente casualizado (DIC) e delineamento
     em blocos casualizados (DBC), incluindo modelos fatoriais, diagnostico de
     pressupostos, tabelas de medias, graficos e utilitarios para relatorios.
+    Inclui o aplicativo Shiny Ranova para digitar ou importar dados e gerar
+    as analises sem programar.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -34,5 +36,9 @@ Imports:
     tibble,
     tidyr
 Suggests:
-    testthat (>= 3.0.0)
+    readxl,
+    rhandsontable,
+    shiny,
+    testthat (>= 3.0.0),
+    writexl
 Config/testthat/edition: 3
