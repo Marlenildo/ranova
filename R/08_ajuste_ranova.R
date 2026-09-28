@@ -1,40 +1,40 @@
 # =========================================================
 # 08_ajuste_ranova.R
 #
-# Motor de analise para fatoriais (DIC e DBC) e parcelas
-# subdivididas (DIC e DBC), com o erro correto para cada
+# Motor de analise para fatoriais (DIC e DBC), parcelas
+# subdivididas (com fatorial na parcela ou na subparcela) e
+# parcelas subsubdivididas, com o erro correto para cada
 # teste F e para cada comparacao de medias.
 # =========================================================
 
-#' Delineamentos suportados por `ranova_ajuste()`
-#'
-#' - `"DIC"`: inteiramente casualizado, fatorial com 1 a 3 fatores.
-#' - `"DBC"`: blocos casualizados, fatorial com 1 a 3 fatores.
-#' - `"PSDIC"`: parcelas subdivididas em DIC (fator 1 na parcela,
-#'   fator 2 na subparcela; exige a coluna de repeticao).
-#' - `"PSDBC"`: parcelas subdivididas em DBC (fator 1 na parcela,
-#'   fator 2 na subparcela; exige a coluna de blocos).
-#'
-#' @keywords internal
-#' @noRd
-DELINEAMENTOS_RANOVA <- c("DIC", "DBC", "PSDIC", "PSDBC")
-
-#' Ajusta o modelo de um experimento fatorial ou em parcelas subdivididas
+#' Ajusta o modelo de um experimento fatorial, em parcelas subdivididas ou subsubdivididas
 #'
 #' Ajusta um modelo linear (`lm`) com os termos adequados ao delineamento e
-#' guarda os quadrados medios de erro usados nos testes F e nas comparacoes de
-#' medias. Em parcelas subdivididas, o termo parcela (bloco x fator da parcela
-#' no DBC, ou repeticao dentro do fator da parcela no DIC) e o erro (a), e o
-#' residuo e o erro (b).
+#' guarda os quadrados medios de erro de cada estrato. Cada fator pertence a um
+#' estrato: 1 (parcela), 2 (subparcela) ou 3 (subsubparcela). Um termo de
+#' tratamento pertence ao maior estrato entre os seus fatores e e testado contra
+#' o erro desse estrato.
+#'
+#' - `"DIC"` e `"DBC"`: fatorial com 1 a 3 fatores, um unico erro (residuo).
+#' - `"PSDIC"` e `"PSDBC"`: parcelas subdivididas, erros (a) e (b). Com dois
+#'   fatores, o primeiro fica na parcela e o segundo na subparcela; com tres,
+#'   informe `estratos` (por exemplo, `c(1, 1, 2)` para fatorial na parcela ou
+#'   `c(1, 2, 2)` para fatorial na subparcela).
+#' - `"PSSDIC"` e `"PSSDBC"`: parcelas subsubdivididas com tres fatores
+#'   (parcela, subparcela e subsubparcela), erros (a), (b) e (c).
+#'
+#' No DIC com parcelas, a coluna `repeticao` identifica a repeticao de cada
+#' parcela dentro da combinacao dos fatores da parcela.
 #'
 #' @param dados `data.frame` com os dados experimentais.
 #' @param resposta Nome da variavel resposta.
-#' @param fatores Nomes dos fatores. Em parcelas subdivididas, o primeiro e o
-#'   fator da parcela e o segundo, o da subparcela.
-#' @param delineamento `"DIC"`, `"DBC"`, `"PSDIC"` ou `"PSDBC"`.
-#' @param bloco Coluna de blocos (obrigatoria em `"DBC"` e `"PSDBC"`).
-#' @param repeticao Coluna que identifica a repeticao (parcela) dentro de cada
-#'   nivel do fator da parcela (obrigatoria em `"PSDIC"`).
+#' @param fatores Nomes dos fatores.
+#' @param delineamento `"DIC"`, `"DBC"`, `"PSDIC"`, `"PSDBC"`, `"PSSDIC"` ou
+#'   `"PSSDBC"`.
+#' @param bloco Coluna de blocos (obrigatoria nos delineamentos em blocos).
+#' @param repeticao Coluna de repeticao (obrigatoria nas parcelas em DIC).
+#' @param estratos Estrato de cada fator (1 = parcela, 2 = subparcela,
+#'   3 = subsubparcela), na ordem de `fatores`. Opcional nos casos padrao.
 #'
 #' @return Objeto da classe `ranova_ajuste`.
 #' @export
@@ -48,60 +48,79 @@ ranova_ajuste <- function(
     dados,
     resposta,
     fatores,
-    delineamento = c("DIC", "DBC", "PSDIC", "PSDBC"),
+    delineamento = c("DIC", "DBC", "PSDIC", "PSDBC", "PSSDIC", "PSSDBC"),
     bloco = NULL,
-    repeticao = NULL
+    repeticao = NULL,
+    estratos = NULL
 ) {
   delineamento <- match.arg(delineamento)
   stopifnot(is.character(resposta), length(resposta) == 1, is.character(fatores))
-  parcela_sub <- delineamento %in% c("PSDIC", "PSDBC")
+  em_blocos <- delineamento %in% c("DBC", "PSDBC", "PSSDBC")
+  n_estratos <- switch(substr(delineamento, 1, 3), PSS = 3L, PSD = 2L, 1L)
+  if (delineamento %in% c("DIC", "DBC")) n_estratos <- 1L
 
-  if (parcela_sub && length(fatores) != 2) {
-    stop("Parcelas subdivididas exigem dois fatores: o da parcela e o da subparcela.", call. = FALSE)
+  if (length(fatores) < 1 || length(fatores) > 3) stop("Use de 1 a 3 fatores.", call. = FALSE)
+  if (is.null(estratos)) {
+    estratos <- if (n_estratos == 1) {
+      rep(1L, length(fatores))
+    } else if (n_estratos == 2 && length(fatores) == 2) {
+      c(1L, 2L)
+    } else if (n_estratos == 3 && length(fatores) == 3) {
+      c(1L, 2L, 3L)
+    } else {
+      stop("Informe `estratos` (1 = parcela, 2 = subparcela, 3 = subsubparcela) para cada fator.", call. = FALSE)
+    }
   }
-  if (!parcela_sub && (length(fatores) < 1 || length(fatores) > 3)) {
-    stop("Use de 1 a 3 fatores.", call. = FALSE)
+  estratos <- as.integer(estratos)
+  if (length(estratos) != length(fatores)) stop("`estratos` deve ter um valor por fator.", call. = FALSE)
+  if (!identical(sort(unique(estratos)), seq_len(n_estratos))) {
+    stop(sprintf("Com o delineamento %s, os fatores devem ocupar os estratos %s.", delineamento,
+                 paste(seq_len(n_estratos), collapse = ", ")), call. = FALSE)
   }
-  if (delineamento %in% c("DBC", "PSDBC") && is.null(bloco)) {
-    stop("Informe a coluna de blocos.", call. = FALSE)
+  names(estratos) <- fatores
+  if (em_blocos && is.null(bloco)) stop("Informe a coluna de blocos.", call. = FALSE)
+  if (!em_blocos && n_estratos > 1 && is.null(repeticao)) {
+    stop("Em parcelas no DIC, informe a coluna de repeticao.", call. = FALSE)
   }
-  if (identical(delineamento, "PSDIC") && is.null(repeticao)) {
-    stop("Em parcelas subdivididas no DIC, informe a coluna de repeticao.", call. = FALSE)
-  }
-  if (!delineamento %in% c("DBC", "PSDBC")) bloco <- NULL
-  if (!identical(delineamento, "PSDIC")) repeticao <- NULL
+  if (!em_blocos) bloco <- NULL
+  if (em_blocos || n_estratos == 1) repeticao <- NULL
 
   dados <- as.data.frame(dados)
   for (coluna in c(fatores, bloco, repeticao)) {
     if (!is.factor(dados[[coluna]])) dados[[coluna]] <- factor(dados[[coluna]])
   }
 
-  termo_erro_a <- NULL
-  if (identical(delineamento, "PSDBC")) {
-    termo_erro_a <- paste0(bloco, ":", fatores[1])
-    direita <- paste(bloco, "+", fatores[1], "+", termo_erro_a, "+", fatores[2], "+", paste0(fatores[1], ":", fatores[2]))
-  } else if (identical(delineamento, "PSDIC")) {
-    termo_erro_a <- paste0(fatores[1], ":", repeticao)
-    direita <- paste(fatores[1], "+", termo_erro_a, "+", fatores[2], "+", paste0(fatores[1], ":", fatores[2]))
-  } else {
-    direita <- paste(c(bloco, paste(fatores, collapse = " * ")), collapse = " + ")
+  # Termos de tratamento (todas as combinacoes de fatores), agrupados pelo
+  # estrato do termo: o maior estrato entre os seus fatores.
+  subconjuntos <- unlist(lapply(seq_along(fatores), function(k) utils::combn(fatores, k, simplify = FALSE)), recursive = FALSE)
+  estrato_termo <- vapply(subconjuntos, function(x) max(estratos[x]), integer(1))
+  termos_trat <- vapply(subconjuntos, paste, character(1), collapse = ":")
+
+  # Unidade experimental de cada estrato (menos o ultimo, que e o residuo)
+  unidade <- if (em_blocos) bloco else repeticao
+  termos_erro <- character()
+  for (e in seq_len(n_estratos - 1)) {
+    termos_erro[e] <- paste(c(unidade, fatores[estratos <= e]), collapse = ":")
   }
 
-  formula <- stats::as.formula(paste(resposta, "~", direita))
-  modelo <- stats::lm(formula, data = dados)
+  direita <- c(if (em_blocos) bloco)
+  for (e in seq_len(n_estratos)) {
+    direita <- c(direita, termos_trat[estrato_termo == e])
+    if (e < n_estratos) direita <- c(direita, termos_erro[e])
+  }
+  formula <- stats::as.formula(paste(resposta, "~", paste(direita, collapse = " + ")))
+  modelo <- stats::lm(stats::terms(formula, keep.order = TRUE), data = dados)
   tabela <- stats::anova(modelo)
   termos <- trimws(rownames(tabela))
 
-  erro_b <- list(qm = tabela[["Mean Sq"]][termos == "Residuals"], gl = tabela[["Df"]][termos == "Residuals"])
-  erro_a <- if (!is.null(termo_erro_a)) {
-    i <- which(termos == termo_erro_a)
-    if (length(i) == 0) {
-      # A ordem dos nomes na interacao pode vir invertida no lm
-      partes <- strsplit(termo_erro_a, ":", fixed = TRUE)[[1]]
-      i <- which(termos == paste(rev(partes), collapse = ":"))
-    }
-    termo_erro_a <- termos[i]
-    list(qm = tabela[["Mean Sq"]][i], gl = tabela[["Df"]][i])
+  # Compara termos sem depender da ordem dos nomes (A:rep ou rep:A).
+  chave <- function(x) vapply(strsplit(x, ":", fixed = TRUE), function(p) paste(sort(p), collapse = ":"), character(1))
+  erros <- vector("list", n_estratos)
+  for (e in seq_len(n_estratos)) {
+    i <- if (e < n_estratos) which(chave(termos) == chave(termos_erro[e])) else which(termos == "Residuals")
+    rotulo_termo <- termos[i]
+    if (length(i) == 0) stop("Nao foi possivel estimar o erro do estrato ", e, ". Confira a estrutura dos dados.", call. = FALSE)
+    erros[[e]] <- list(qm = tabela[["Mean Sq"]][i], gl = tabela[["Df"]][i], termo = rotulo_termo)
   }
 
   structure(
@@ -114,9 +133,13 @@ ranova_ajuste <- function(
       delineamento = delineamento,
       bloco = bloco,
       repeticao = repeticao,
-      termo_erro_a = termo_erro_a,
-      erro_a = erro_a,
-      erro_b = erro_b
+      estratos = estratos,
+      n_estratos = n_estratos,
+      estrato_termo = stats::setNames(estrato_termo, termos_trat),
+      erros = erros,
+      # Compatibilidade com a versao 0.5.0
+      erro_a = if (n_estratos > 1) erros[[1]],
+      erro_b = erros[[n_estratos]]
     ),
     class = "ranova_ajuste"
   )
@@ -124,15 +147,17 @@ ranova_ajuste <- function(
 
 #' @export
 print.ranova_ajuste <- function(x, ...) {
-  cat("Ajuste ranova:", x$delineamento, "| resposta:", x$resposta, "| fatores:", paste(x$fatores, collapse = ", "), "\n")
+  cat("Ajuste ranova:", x$delineamento, "| resposta:", x$resposta, "| fatores:",
+      paste0(x$fatores, " (estrato ", x$estratos, ")", collapse = ", "), "\n")
   print(ranova_anova(x))
   invisible(x)
 }
 
 #' Quadro da analise de variancia
 #'
-#' Em parcelas subdivididas, o bloco e o fator da parcela sao testados contra o
-#' erro (a); o fator da subparcela e a interacao, contra o erro (b).
+#' Cada termo e testado contra o erro do seu estrato: bloco e termos da parcela
+#' contra o erro (a); termos com fator da subparcela contra o erro (b); termos
+#' com fator da subsubparcela contra o erro (c).
 #'
 #' @param ajuste Objeto retornado por `ranova_ajuste()`.
 #'
@@ -144,37 +169,46 @@ ranova_anova <- function(ajuste) {
   tab <- ajuste$anova_lm
   termos <- trimws(rownames(tab))
   media <- mean(ajuste$dados[[ajuste$resposta]], na.rm = TRUE)
+  n_e <- ajuste$n_estratos
 
   saida <- data.frame(
-    FV = termos,
-    GL = tab[["Df"]],
-    SQ = tab[["Sum Sq"]],
-    QM = tab[["Mean Sq"]],
-    F = tab[["F value"]],
-    p = tab[["Pr(>F)"]],
-    stringsAsFactors = FALSE
+    FV = termos, GL = tab[["Df"]], SQ = tab[["Sum Sq"]], QM = tab[["Mean Sq"]],
+    F = tab[["F value"]], p = tab[["Pr(>F)"]], stringsAsFactors = FALSE
   )
 
-  if (is.null(ajuste$erro_a)) {
+  if (n_e == 1) {
     saida$FV[saida$FV == "Residuals"] <- "Resíduo"
-    cv <- c("CV (%)" = sqrt(ajuste$erro_b$qm) / media * 100)
+    cv <- c("CV (%)" = sqrt(ajuste$erros[[1]]$qm) / media * 100)
   } else {
-    contra_a <- c(ajuste$bloco, ajuste$fatores[1])
-    for (termo in contra_a) {
-      i <- which(saida$FV == termo)
-      saida$F[i] <- saida$QM[i] / ajuste$erro_a$qm
-      saida$p[i] <- stats::pf(saida$F[i], saida$GL[i], ajuste$erro_a$gl, lower.tail = FALSE)
+    letras_erro <- letters[seq_len(n_e)]
+    estrato_de <- function(termo) {
+      if (!is.null(ajuste$bloco) && identical(termo, ajuste$bloco)) return(1L)
+      e <- ajuste$estrato_termo[termo]
+      if (is.na(e)) {
+        partes <- sort(strsplit(termo, ":", fixed = TRUE)[[1]])
+        chaves <- vapply(strsplit(names(ajuste$estrato_termo), ":", fixed = TRUE), function(x) paste(sort(x), collapse = ":"), character(1))
+        e <- ajuste$estrato_termo[match(paste(partes, collapse = ":"), chaves)]
+      }
+      as.integer(e)
     }
-    i_a <- which(saida$FV == ajuste$termo_erro_a)
-    saida$F[i_a] <- NA
-    saida$p[i_a] <- NA
-    saida$FV[i_a] <- "Erro (a)"
-    saida$FV[saida$FV == "Residuals"] <- "Erro (b)"
-    ordem <- c(ajuste$bloco, ajuste$fatores[1], "Erro (a)", ajuste$fatores[2],
-               saida$FV[grepl(":", saida$FV, fixed = TRUE)], "Erro (b)")
-    saida <- saida[match(ordem, saida$FV), , drop = FALSE]
-    cv <- c("CV a (%)" = sqrt(ajuste$erro_a$qm) / media * 100,
-            "CV b (%)" = sqrt(ajuste$erro_b$qm) / media * 100)
+    termos_erro <- vapply(ajuste$erros, `[[`, character(1), "termo")
+    for (i in seq_len(nrow(saida))) {
+      if (saida$FV[i] %in% termos_erro) {
+        saida$F[i] <- NA
+        saida$p[i] <- NA
+        next
+      }
+      e <- estrato_de(saida$FV[i])
+      if (is.na(e)) next
+      erro <- ajuste$erros[[e]]
+      saida$F[i] <- saida$QM[i] / erro$qm
+      saida$p[i] <- stats::pf(saida$F[i], saida$GL[i], erro$gl, lower.tail = FALSE)
+    }
+    for (e in seq_len(n_e)) saida$FV[saida$FV == termos_erro[e]] <- paste0("Erro (", letras_erro[e], ")")
+    cv <- stats::setNames(
+      vapply(ajuste$erros, function(x) sqrt(x$qm) / media * 100, numeric(1)),
+      paste0("CV ", letras_erro, " (%)")
+    )
   }
 
   rownames(saida) <- NULL
@@ -184,30 +218,26 @@ ranova_anova <- function(ajuste) {
 
 # ---------------------------------------------------------
 # Erro usado na comparacao das medias de `fator` (opcionalmente
-# dentro de cada nivel de `dentro`).
+# dentro de cada nivel de `dentro`). Quando `fator` esta num
+# estrato inferior ao de `dentro`, usa o erro combinado com
+# graus de liberdade de Satterthwaite.
 # ---------------------------------------------------------
 #' @keywords internal
 #' @noRd
 erro_comparacao <- function(ajuste, fator, dentro = NULL) {
-  if (is.null(ajuste$erro_a)) {
-    return(c(ajuste$erro_b, list(descricao = "resíduo")))
+  n_e <- ajuste$n_estratos
+  descricao <- function(e) if (n_e == 1) "resíduo" else paste0("erro (", letters[e], ")")
+  i <- ajuste$estratos[[fator]]
+  j <- if (is.null(dentro)) i else ajuste$estratos[[dentro]]
+  if (j <= i) {
+    return(c(ajuste$erros[[i]][c("qm", "gl")], list(descricao = descricao(i))))
   }
-  parcela <- ajuste$fatores[1]
-  sub <- ajuste$fatores[2]
-  if (identical(fator, parcela) && is.null(dentro)) {
-    return(c(ajuste$erro_a, list(descricao = "erro (a)")))
-  }
-  if (identical(fator, sub)) {
-    return(c(ajuste$erro_b, list(descricao = "erro (b)")))
-  }
-  # Fator da parcela dentro de cada nivel da subparcela: erro combinado com
-  # graus de liberdade de Satterthwaite.
-  b <- nlevels(ajuste$dados[[sub]])
-  qma <- ajuste$erro_a$qm
-  qmb <- ajuste$erro_b$qm
-  qm <- (qma + (b - 1) * qmb) / b
-  gl <- (qma + (b - 1) * qmb)^2 / (qma^2 / ajuste$erro_a$gl + ((b - 1) * qmb)^2 / ajuste$erro_b$gl)
-  list(qm = qm, gl = gl, descricao = "erro combinado (Satterthwaite)")
+  k <- nlevels(ajuste$dados[[dentro]])
+  qmi <- ajuste$erros[[i]]$qm
+  qmj <- ajuste$erros[[j]]$qm
+  qm <- (qmi + (k - 1) * qmj) / k
+  gl <- (qmi + (k - 1) * qmj)^2 / (qmi^2 / ajuste$erros[[i]]$gl + ((k - 1) * qmj)^2 / ajuste$erros[[j]]$gl)
+  list(qm = qm, gl = gl, descricao = paste0("erro combinado (", letters[i], " e ", letters[j], ", Satterthwaite)"))
 }
 
 #' Medias com letras pelo teste escolhido
@@ -217,7 +247,9 @@ erro_comparacao <- function(ajuste, fator, dentro = NULL) {
 #' usando o quadrado medio e os graus de liberdade corretos para o
 #' delineamento. Em parcelas subdivididas, o fator da parcela usa o erro (a);
 #' o fator da subparcela, o erro (b); e o fator da parcela dentro de cada nivel
-#' da subparcela, o erro combinado com graus de liberdade de Satterthwaite.
+#' da subparcela, o erro combinado com graus de liberdade de Satterthwaite
+#' (a mesma regra vale para fatorial na parcela e para parcelas
+#' subsubdivididas, estrato a estrato).
 #'
 #' @param ajuste Objeto retornado por `ranova_ajuste()`.
 #' @param fator Fator cujas medias serao comparadas.
@@ -255,7 +287,7 @@ ranova_medias <- function(
   # medias marginais com peso igual para cada combinacao (medias ajustadas em
   # dados balanceados; em DIC/DBC desbalanceados usa-se emmeans).
   medias_marginais <- function(sub) {
-    usar_emmeans <- !ajuste$delineamento %in% c("PSDIC", "PSDBC")
+    usar_emmeans <- ajuste$n_estratos == 1
     if (usar_emmeans) {
       forma <- if (is.null(dentro)) stats::as.formula(paste("~", fator)) else stats::as.formula(paste("~", fator, "|", dentro))
       em <- as.data.frame(suppressMessages(emmeans::emmeans(ajuste$modelo, forma)))

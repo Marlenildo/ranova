@@ -14,6 +14,7 @@ ranova_anova(ajuste)
 atributo \code{cv} traz o(s) coeficiente(s) de variacao (\%).
 }
 \description{
-Em parcelas subdivididas, o bloco e o fator da parcela sao testados contra o
-erro (a); o fator da subparcela e a interacao, contra o erro (b).
+Cada termo e testado contra o erro do seu estrato: bloco e termos da parcela
+contra o erro (a); termos com fator da subparcela contra o erro (b); termos
+com fator da subsubparcela contra o erro (c).
 }

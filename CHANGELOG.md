@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0] - 2026-09-28
+
+### Added
+- `ranova_ajuste()` aceita `estratos` (1 = parcela, 2 = subparcela, 3 = subsubparcela) para cada fator: **fatorial na parcela** (ex.: `c(1, 1, 2)`), fatorial na subparcela (`c(1, 2, 2)`) e **parcelas subsubdivididas** (`"PSSDIC"` e `"PSSDBC"`, erros (a), (b) e (c)).
+- `ranova_anova()` testa cada termo contra o erro do seu estrato e devolve um CV por estrato.
+- `ranova_medias()` generaliza o erro combinado de Satterthwaite para qualquer par de estratos.
+- Testes conferidos com `aov(... + Error())` e `agricolae::ssp.plot`.
+
 ## [0.5.0] - 2026-09-28
 
 ### Added

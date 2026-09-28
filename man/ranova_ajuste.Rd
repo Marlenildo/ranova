@@ -2,15 +2,16 @@
 % Please edit documentation in R/08_ajuste_ranova.R
 \name{ranova_ajuste}
 \alias{ranova_ajuste}
-\title{Ajusta o modelo de um experimento fatorial ou em parcelas subdivididas}
+\title{Ajusta o modelo de um experimento fatorial, em parcelas subdivididas ou subsubdivididas}
 \usage{
 ranova_ajuste(
   dados,
   resposta,
   fatores,
-  delineamento = c("DIC", "DBC", "PSDIC", "PSDBC"),
+  delineamento = c("DIC", "DBC", "PSDIC", "PSDBC", "PSSDIC", "PSSDBC"),
   bloco = NULL,
-  repeticao = NULL
+  repeticao = NULL,
+  estratos = NULL
 )
 }
 \arguments{
@@ -18,25 +19,41 @@ ranova_ajuste(
 
 \item{resposta}{Nome da variavel resposta.}
 
-\item{fatores}{Nomes dos fatores. Em parcelas subdivididas, o primeiro e o
-fator da parcela e o segundo, o da subparcela.}
+\item{fatores}{Nomes dos fatores.}
 
-\item{delineamento}{\code{"DIC"}, \code{"DBC"}, \code{"PSDIC"} ou \code{"PSDBC"}.}
+\item{delineamento}{\code{"DIC"}, \code{"DBC"}, \code{"PSDIC"}, \code{"PSDBC"}, \code{"PSSDIC"} ou
+\code{"PSSDBC"}.}
 
-\item{bloco}{Coluna de blocos (obrigatoria em \code{"DBC"} e \code{"PSDBC"}).}
+\item{bloco}{Coluna de blocos (obrigatoria nos delineamentos em blocos).}
 
-\item{repeticao}{Coluna que identifica a repeticao (parcela) dentro de cada
-nivel do fator da parcela (obrigatoria em \code{"PSDIC"}).}
+\item{repeticao}{Coluna de repeticao (obrigatoria nas parcelas em DIC).}
+
+\item{estratos}{Estrato de cada fator (1 = parcela, 2 = subparcela,
+3 = subsubparcela), na ordem de \code{fatores}. Opcional nos casos padrao.}
 }
 \value{
 Objeto da classe \code{ranova_ajuste}.
 }
 \description{
 Ajusta um modelo linear (\code{lm}) com os termos adequados ao delineamento e
-guarda os quadrados medios de erro usados nos testes F e nas comparacoes de
-medias. Em parcelas subdivididas, o termo parcela (bloco x fator da parcela
-no DBC, ou repeticao dentro do fator da parcela no DIC) e o erro (a), e o
-residuo e o erro (b).
+guarda os quadrados medios de erro de cada estrato. Cada fator pertence a um
+estrato: 1 (parcela), 2 (subparcela) ou 3 (subsubparcela). Um termo de
+tratamento pertence ao maior estrato entre os seus fatores e e testado contra
+o erro desse estrato.
+}
+\details{
+\itemize{
+\item \code{"DIC"} e \code{"DBC"}: fatorial com 1 a 3 fatores, um unico erro (residuo).
+\item \code{"PSDIC"} e \code{"PSDBC"}: parcelas subdivididas, erros (a) e (b). Com dois
+fatores, o primeiro fica na parcela e o segundo na subparcela; com tres,
+informe \code{estratos} (por exemplo, \code{c(1, 1, 2)} para fatorial na parcela ou
+\code{c(1, 2, 2)} para fatorial na subparcela).
+\item \code{"PSSDIC"} e \code{"PSSDBC"}: parcelas subsubdivididas com tres fatores
+(parcela, subparcela e subsubparcela), erros (a), (b) e (c).
+}
+
+No DIC com parcelas, a coluna \code{repeticao} identifica a repeticao de cada
+parcela dentro da combinacao dos fatores da parcela.
 }
 \examples{
 dados <- expand.grid(bloco = factor(1:4), A = factor(1:3), B = factor(1:2))
