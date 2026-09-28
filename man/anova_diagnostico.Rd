@@ -2,7 +2,7 @@
 % Please edit documentation in R/03_funcoes_diagnostico.R
 \name{anova_diagnostico}
 \alias{anova_diagnostico}
-\title{Diagnostica pressupostos da ANOVA fatorial}
+\title{Diagnostica pressupostos da ANOVA}
 \usage{
 anova_diagnostico(
   dados,
@@ -33,7 +33,8 @@ anova_diagnostico(
 Lista com \code{tabela} (kable formatada) e \code{dados_brutos} (\code{data.frame}).
 }
 \description{
-Ajusta o mesmo modelo usado na ANOVA fatorial e executa testes
+Ajusta o mesmo modelo usado em \code{\link[=anova_fatorial_qm_tabela]{anova_fatorial_qm_tabela()}} (experimento
+simples ou fatorial, em DIC ou DBC) e executa testes
 de normalidade (Shapiro-Wilk) e homogeneidade (Levene) para uma
 ou mais variaveis resposta.
 }

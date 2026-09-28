@@ -1,13 +1,14 @@
 # =========================================================
 # 08_ajuste_ranova.R
 #
-# Motor de analise para fatoriais (DIC e DBC), parcelas
-# subdivididas (com fatorial na parcela ou na subparcela) e
-# parcelas subsubdivididas, com o erro correto para cada
-# teste F e para cada comparacao de medias.
+# Motor de analise para experimentos simples e em esquema
+# fatorial (DIC e DBC), parcelas subdivididas (inclusive com
+# esquema fatorial nas parcelas ou nas subparcelas) e parcelas
+# subsubdivididas, com o erro correto para cada teste F e para
+# cada comparacao de medias.
 # =========================================================
 
-#' Ajusta o modelo de um experimento fatorial, em parcelas subdivididas ou subsubdivididas
+#' Ajusta o modelo de um experimento simples, fatorial, em parcelas subdivididas ou subsubdivididas
 #'
 #' Ajusta um modelo linear (`lm`) com os termos adequados ao delineamento e
 #' guarda os quadrados medios de erro de cada estrato. Cada fator pertence a um
@@ -15,11 +16,13 @@
 #' tratamento pertence ao maior estrato entre os seus fatores e e testado contra
 #' o erro desse estrato.
 #'
-#' - `"DIC"` e `"DBC"`: fatorial com 1 a 3 fatores, um unico erro (residuo).
+#' - `"DIC"` e `"DBC"`: experimento simples (1 fator) ou em esquema fatorial
+#'   (2 ou 3 fatores sorteados juntos), com um unico erro (residuo).
 #' - `"PSDIC"` e `"PSDBC"`: parcelas subdivididas, erros (a) e (b). Com dois
-#'   fatores, o primeiro fica na parcela e o segundo na subparcela; com tres,
-#'   informe `estratos` (por exemplo, `c(1, 1, 2)` para fatorial na parcela ou
-#'   `c(1, 2, 2)` para fatorial na subparcela).
+#'   fatores, o primeiro fica na parcela e o segundo na subparcela (parcelas
+#'   subdivididas, sem esquema fatorial); com tres, informe `estratos` (por
+#'   exemplo, `c(1, 1, 2)` para esquema fatorial nas parcelas ou `c(1, 2, 2)`
+#'   para esquema fatorial nas subparcelas).
 #' - `"PSSDIC"` e `"PSSDBC"`: parcelas subsubdivididas com tres fatores
 #'   (parcela, subparcela e subsubparcela), erros (a), (b) e (c).
 #'
@@ -177,7 +180,7 @@ ranova_anova <- function(ajuste) {
   )
 
   if (n_e == 1) {
-    saida$FV[saida$FV == "Residuals"] <- "Resíduo"
+    saida$FV[saida$FV == "Residuals"] <- "Res\u00EDduo"
     cv <- c("CV (%)" = sqrt(ajuste$erros[[1]]$qm) / media * 100)
   } else {
     letras_erro <- letters[seq_len(n_e)]
@@ -226,7 +229,7 @@ ranova_anova <- function(ajuste) {
 #' @noRd
 erro_comparacao <- function(ajuste, fator, dentro = NULL) {
   n_e <- ajuste$n_estratos
-  descricao <- function(e) if (n_e == 1) "resíduo" else paste0("erro (", letters[e], ")")
+  descricao <- function(e) if (n_e == 1) "res\u00EDduo" else paste0("erro (", letters[e], ")")
   i <- ajuste$estratos[[fator]]
   j <- if (is.null(dentro)) i else ajuste$estratos[[dentro]]
   if (j <= i) {
@@ -248,8 +251,8 @@ erro_comparacao <- function(ajuste, fator, dentro = NULL) {
 #' delineamento. Em parcelas subdivididas, o fator da parcela usa o erro (a);
 #' o fator da subparcela, o erro (b); e o fator da parcela dentro de cada nivel
 #' da subparcela, o erro combinado com graus de liberdade de Satterthwaite
-#' (a mesma regra vale para fatorial na parcela e para parcelas
-#' subsubdivididas, estrato a estrato).
+#' (a mesma regra vale para o esquema fatorial nas parcelas ou nas
+#' subparcelas e para parcelas subsubdivididas, estrato a estrato).
 #'
 #' @param ajuste Objeto retornado por `ranova_ajuste()`.
 #' @param fator Fator cujas medias serao comparadas.

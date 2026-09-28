@@ -1,30 +1,30 @@
 # =========================================================
 # 06_funcoes_modelo_fatorial_medias.R
 #
-# Conjunto de funA?A?es genACricas para:
-# - Ajuste de modelos fatoriais (DIC ou DBC)
-# - AnA!lise de variAcncia (ANOVA)
-# - Testes de comparaA?A?o de mACdias
+# Conjunto de funcoes genericas para:
+# - Ajuste de modelos de experimentos simples e fatoriais (DIC ou DBC)
+# - Analise de variancia (ANOVA)
+# - Testes de comparacao de medias
 #
-# PRINCA?PIO ARQUITETURAL:
-# - Este arquivo NAfO conhece variA!veis experimentais
-# - Nomes, siglas e unidades sA?o definidos no R_local
-# - A biblioteca apenas CONSOME um dicionA!rio opcional
+# PRINCIPIO ARQUITETURAL:
+# - Este arquivo NAO conhece variaveis experimentais
+# - Nomes, siglas e unidades sao definidos no R_local
+# - A biblioteca apenas CONSOME um dicionario opcional
 #
-# ao"i,? Aceita 1 ou mais fatores
-# ao"i,? Aceita DIC (sem bloco) ou DBC (com bloco)
-# ao"i,? Funciona para qualquer banco de dados
+# - Aceita 1 fator (experimento simples) ou mais (esquema fatorial)
+# - Aceita DIC (sem bloco) ou DBC (com bloco)
+# - Funciona para qualquer banco de dados
 #
 # Autor: Marlenildo Ferreira Melo
 # =========================================================
 
 
 # =========================================================
-# FUNA?A.ES AUXILIARES GERAIS
+# FUNCOES AUXILIARES GERAIS
 # =========================================================
 
 # ---------------------------------------------------------
-# SA-mbolos de significAcncia estatA-stica
+# Simbolos de significancia estatistica
 # ---------------------------------------------------------
 #' @keywords internal
 #' @noRd
@@ -37,7 +37,7 @@ sig_star <- function(p) {
 }
 
 # ---------------------------------------------------------
-# FormataA?A?o de p-valor
+# Formatacao de p-valor
 # ---------------------------------------------------------
 #' @keywords internal
 #' @noRd
@@ -51,7 +51,7 @@ formata_p_valor <- function(p, digitos = 4) {
 }
 
 # ---------------------------------------------------------
-# Pintar cAClulas com significAcncia (kable)
+# Pintar celulas com significancia (kable)
 # ---------------------------------------------------------
 #' @keywords internal
 #' @noRd
@@ -68,9 +68,9 @@ pinta_se_signif <- function(x) {
 }
 
 # ---------------------------------------------------------
-# Resolver rA3tulo de variA!vel via dicionA!rio (GENA?RICO)
+# Resolver rotulo de variavel via dicionario (GENERICO)
 #
-# - dic_vars AC DEFINIDO NO R_local
+# - dic_vars E DEFINIDO NO R_local
 # - Estrutura esperada:
 #   tibble(var, sigla, label, description)
 # ---------------------------------------------------------
@@ -89,13 +89,13 @@ resolve_var_label <- function(
 ) {
   type <- match.arg(type)
   
-  # Sem dicionA!rio a?' fallback total
+  # Sem dicionario -> fallback total
   if (is.null(dic_vars)) return(var)
   
-  # VerificaA?A?o mA-nima de contrato
+  # Verificacao minima de contrato
   stopifnot("var" %in% names(dic_vars))
   
-  # VariA!vel fora do dicionA!rio a?' fallback
+  # Variavel fora do dicionario -> fallback
   if (!var %in% dic_vars$var) return(var)
   
   linha <- dic_vars[dic_vars$var == var, , drop = FALSE]
@@ -111,9 +111,12 @@ resolve_var_label <- function(
 
 
 # =========================================================
-# 1i,?af? Ajuste genACrico do modelo fatorial
+# 1. Ajuste generico do modelo (experimento simples ou fatorial)
 # =========================================================
-#' Ajusta modelo fatorial (DIC ou DBC)
+#' Ajusta modelo de experimento simples ou fatorial (DIC ou DBC)
+#'
+#' Modelo com todos os efeitos principais e interacoes dos fatores e, no DBC,
+#' o efeito de bloco. Para parcelas subdivididas, use [ranova_ajuste()].
 #'
 #' @param dados `data.frame` com os dados experimentais.
 #' @param resposta Nome da variavel resposta.
@@ -146,9 +149,12 @@ ajusta_modelo_fatorial <- function(
 
 
 # =========================================================
-# 2i,?af? Tabela de ANOVA fatorial (Quadrados MACdios)
+# 2. Tabela de ANOVA (quadrados medios)
 # =========================================================
-#' Gera tabela de ANOVA fatorial
+#' Gera tabela de ANOVA
+#'
+#' Quadro da ANOVA de experimentos simples ou fatoriais em DIC ou DBC, para uma
+#' ou varias respostas. Para parcelas subdivididas, use [ranova_anova()].
 #'
 #' @param dados `data.frame` com os dados experimentais.
 #' @param variaveis Vetor de nomes das variaveis resposta.
@@ -170,7 +176,7 @@ anova_fatorial_qm_tabela <- function(
     dic_vars = NULL,
     label_type = c("label", "sigla", "description", "var"),
     formato = c("qm_star", "f_p_colunas", "f_p_inline"),
-    caption = "Resumo da análise de variância.",
+    caption = "Resumo da an\u00E1lise de vari\u00E2ncia.",
     digitos = 4
 ) {
   stopifnot(
@@ -300,11 +306,11 @@ anova_fatorial_qm_tabela <- function(
   } else if (formato == "f_p_inline") {
     colnames(tabela) <- c("FV", "GL", nomes_cols)
     header_top <- c(" " = 2, "F (p)" = length(variaveis))
-    nota_rodape <- "F (p) = valor do teste F com valor-p entre parênteses."
+    nota_rodape <- "F (p) = valor do teste F com valor-p entre par\u00EAnteses."
   } else {
     colnames(tabela) <- c("FV", "GL", nomes_cols)
     header_top <- c(" " = 2, "QM" = length(variaveis))
-    nota_rodape <- "QM = quadrado médio; * p < 0,05; ** p < 0,01; *** p < 0,001"
+    nota_rodape <- "QM = quadrado m\u00E9dio; * p < 0,05; ** p < 0,01; *** p < 0,001"
   }
   
   tab_html <- tabela |>
@@ -331,7 +337,7 @@ anova_fatorial_qm_tabela <- function(
 
 
 # =========================================================
-# 3i,?af? Escolha automA!tica do teste de mACdias
+# 3. Escolha automatica do teste de medias
 # =========================================================
 #' @keywords internal
 #' @noRd
@@ -342,7 +348,7 @@ escolhe_teste_medias <- function(dados, fator) {
 
 
 # =========================================================
-# 4i,?af? Erros-padrA?o descritivos (simples e interaA?A?o)
+# 4. Erros-padrao descritivos (simples e interacao)
 # =========================================================
 #' @keywords internal
 #' @noRd
@@ -382,7 +388,7 @@ se_descritivo_interacao <- function(
 
 
 # =========================================================
-# 5i,?af? MACdias ajustadas + CLD
+# 5. Medias ajustadas + CLD
 # =========================================================
 #' Calcula medias ajustadas e grupos de comparacao
 #'
@@ -446,9 +452,9 @@ medias_fatorial_cld <- function(
 
 
 # =========================================================
-# 6i,?af? Tabela final de mACdias fatoriais
+# 6. Tabela final de medias
 # =========================================================
-#' Monta tabela de medias fatoriais
+#' Monta tabela de medias com letras
 #'
 #' @param dados `data.frame` com os dados experimentais.
 #' @param variaveis Vetor de nomes das variaveis resposta.
@@ -471,7 +477,7 @@ tabela_medias_fatorial <- function(
     fatores,
     dic_vars = NULL,
     label_type = c("label", "sigla", "description", "var"),
-    caption = "Médias ajustadas ± erro-padrão.",
+    caption = "M\u00E9dias ajustadas \u00B1 erro-padr\u00E3o.",
     digitos = 2,
     tipo_se = c("modelo", "descritivo")
 ) {
@@ -495,7 +501,7 @@ tabela_medias_fatorial <- function(
           variavel = nome_var,
           media_grupo = paste0(
             round(media, digitos),
-            " ± ",
+            " \u00B1 ",
             round(se, digitos),
             " ",
             grupo
@@ -520,12 +526,12 @@ tabela_medias_fatorial <- function(
 
 
 # ---------------------------------------------------------
-# 7i,?af? Tabela de desdobramento da interaA?A?o fatorial
+# 7. Tabela de desdobramento da interacao
 #
-# Suporta dicionA!rio externo para rotulagem da variA!vel
+# Suporta dicionario externo para rotulagem da variavel
 # resposta, definido no R_local.
 # ---------------------------------------------------------
-#' Tabela de desdobramento da interacao fatorial
+#' Tabela de desdobramento da interacao
 #'
 #' @param dados `data.frame` com os dados experimentais.
 #' @param resposta Nome da variavel resposta.
@@ -552,7 +558,7 @@ tabela_interacao_fatorial <- function(
     label_type = c("label", "sigla", "description", "var"),
     digitos = 2,
     alpha = 0.05,
-    caption = "Desdobramento da interação fatorial."
+    caption = "Desdobramento da intera\u00E7\u00E3o."
 ) {
   
   stopifnot(
@@ -564,7 +570,7 @@ tabela_interacao_fatorial <- function(
   
   label_type <- match.arg(label_type)
   
-  # Nome da variA!vel resposta (semAcntico)
+  # Nome da variavel resposta (semantico)
   nome_var <- resolve_var_label(
     resposta,
     dic_vars = dic_vars,
@@ -580,7 +586,7 @@ tabela_interacao_fatorial <- function(
   )
   
   # =================================================
-  # 1i,?af? COLUNAS a?' letras MAIAsSCULAS
+  # 1. COLUNAS -> letras MAIUSCULAS
   # =================================================
   teste_col <- escolhe_teste_medias(dados, fator_coluna)
   
@@ -603,7 +609,7 @@ tabela_interacao_fatorial <- function(
     )
   
   # =================================================
-  # 2i,?af? LINHAS a?' letras minAosculas
+  # 2. LINHAS -> letras minusculas
   # =================================================
   teste_lin <- escolhe_teste_medias(dados, fator_linha)
   
@@ -626,7 +632,7 @@ tabela_interacao_fatorial <- function(
     )
   
   # =================================================
-  # 3i,?af? CombinaA?A?o final
+  # 3. Combinacao final
   # =================================================
   tabela_final <- col_cld |>
     dplyr::left_join(
@@ -665,12 +671,12 @@ tabela_interacao_fatorial <- function(
 
 
 # ---------------------------------------------------------
-# 8i,?af? Desdobramento da interaA?A?o fatorial
-#    para mAoltiplas variA!veis resposta
+# 8. Desdobramento da interacao
+#    para multiplas variaveis resposta
 #
-# Totalmente compatA-vel com dicionA!rio externo
+# Totalmente compativel com dicionario externo
 # ---------------------------------------------------------
-#' Desdobra interacao fatorial para varias respostas
+#' Desdobra a interacao para varias respostas
 #'
 #' @param dados `data.frame` com os dados experimentais.
 #' @param variaveis Vetor de nomes das variaveis resposta.
@@ -699,7 +705,7 @@ tabela_interacao_fatorial_multivariaveis <- function(
     digitos = 2,
     alpha = 0.05,
     tipo_se = c("modelo", "descritivo"),
-    caption = "Desdobramento da interação fatorial."
+    caption = "Desdobramento da intera\u00E7\u00E3o."
 ) {
   
   stopifnot(

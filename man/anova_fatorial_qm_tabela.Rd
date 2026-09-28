@@ -2,7 +2,7 @@
 % Please edit documentation in R/06_funcoes_modelo_fatorial_medias.R
 \name{anova_fatorial_qm_tabela}
 \alias{anova_fatorial_qm_tabela}
-\title{Gera tabela de ANOVA fatorial}
+\title{Gera tabela de ANOVA}
 \usage{
 anova_fatorial_qm_tabela(
   dados,
@@ -39,5 +39,6 @@ anova_fatorial_qm_tabela(
 Objeto \code{knitr_kable}.
 }
 \description{
-Gera tabela de ANOVA fatorial
+Quadro da ANOVA de experimentos simples ou fatoriais em DIC ou DBC, para uma
+ou varias respostas. Para parcelas subdivididas, use \code{\link[=ranova_anova]{ranova_anova()}}.
 }

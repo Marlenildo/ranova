@@ -2,7 +2,7 @@
 % Please edit documentation in R/06_funcoes_modelo_fatorial_medias.R
 \name{ajusta_modelo_fatorial}
 \alias{ajusta_modelo_fatorial}
-\title{Ajusta modelo fatorial (DIC ou DBC)}
+\title{Ajusta modelo de experimento simples ou fatorial (DIC ou DBC)}
 \usage{
 ajusta_modelo_fatorial(dados, resposta, bloco = NULL, fatores)
 }
@@ -19,5 +19,6 @@ ajusta_modelo_fatorial(dados, resposta, bloco = NULL, fatores)
 Objeto \code{aov}.
 }
 \description{
-Ajusta modelo fatorial (DIC ou DBC)
+Modelo com todos os efeitos principais e interacoes dos fatores e, no DBC,
+o efeito de bloco. Para parcelas subdivididas, use \code{\link[=ranova_ajuste]{ranova_ajuste()}}.
 }

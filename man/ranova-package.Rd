@@ -6,11 +6,14 @@
 \alias{ranova-package}
 \title{ranova: Analise de Variancia para Experimentos}
 \description{
-Ferramentas para ajustar modelos fatoriais (DIC e DBC), gerar ANOVA,
-tabelas de medias, diagnostico de pressupostos e graficos para relatorios.
+Ferramentas para ajustar experimentos simples e em esquema fatorial (DIC e
+DBC), em parcelas subdivididas e subsubdivididas, gerar ANOVA, testes de
+medias, desdobramentos, diagnostico de pressupostos, tabelas e graficos
+para relatorios. O motor principal e \code{\link[=ranova_ajuste]{ranova_ajuste()}}, com
+\code{\link[=ranova_anova]{ranova_anova()}} e \code{\link[=ranova_medias]{ranova_medias()}}.
 }
 \author{
-\strong{Maintainer}: Marlenildo Ferreira Melo \email{marlenildo@example.com}
+\strong{Maintainer}: Marlenildo Ferreira Melo \email{marlenildo@gmail.com}
 
 }
 \keyword{internal}

@@ -3,9 +3,10 @@
 # Diagnostico de pressupostos da ANOVA
 # =========================================================
 
-#' Diagnostica pressupostos da ANOVA fatorial
+#' Diagnostica pressupostos da ANOVA
 #'
-#' Ajusta o mesmo modelo usado na ANOVA fatorial e executa testes
+#' Ajusta o mesmo modelo usado em [anova_fatorial_qm_tabela()] (experimento
+#' simples ou fatorial, em DIC ou DBC) e executa testes
 #' de normalidade (Shapiro-Wilk) e homogeneidade (Levene) para uma
 #' ou mais variaveis resposta.
 #'
