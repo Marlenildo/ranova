@@ -17,7 +17,8 @@ Escopo atual:
 
 - DIC e DBC
 - 1, 2, 3 ou mais fatores
-- parcelas subdivididas em DIC e DBC
+- parcelas subdivididas em DIC e DBC, com fatorial na parcela ou na subparcela
+- parcelas subsubdivididas em DIC e DBC
 - testes de medias: Tukey, t (LSD), Bonferroni, Duncan, SNK, Scott-Knott e Dunnett
 - numero livre de niveis por fator
 
@@ -131,12 +132,18 @@ ranova_medias(ajuste, "irrigacao", dentro = "cultivar", teste = "duncan")      #
 # No DIC, informe a coluna que identifica a parcela (repeticao)
 ranova_ajuste(dados, "prod", c("irrigacao", "cultivar"), "PSDIC", repeticao = "rep")
 
+# Fatorial na parcela (A x B na parcela, C na subparcela)
+ranova_ajuste(dados, "prod", c("A", "B", "C"), "PSDBC", bloco = "bloco", estratos = c(1, 1, 2))
+
+# Parcelas subsubdivididas (A parcela, B subparcela, C subsubparcela): erros (a), (b) e (c)
+ranova_ajuste(dados, "prod", c("A", "B", "C"), "PSSDBC", bloco = "bloco")
+
 # Testes disponiveis
 TESTES_MEDIAS
 letras_teste(c(A = 10, B = 12, C = 15), n = 4, qm = 2, gl = 12, teste = "snk")
 ```
 
-Os resultados foram conferidos com `agricolae` (Tukey, t, Bonferroni, Duncan e SNK) e `ExpDes.pt` (Scott-Knott e parcelas subdivididas, inclusive o erro combinado).
+Os resultados foram conferidos com `agricolae` (Tukey, t, Bonferroni, Duncan, SNK e parcelas subsubdivididas), `ExpDes.pt` (Scott-Knott e parcelas subdivididas, inclusive o erro combinado) e `aov(... + Error())` (fatorial na parcela e na subparcela).
 
 ## Interacao fatorial
 
@@ -284,7 +291,8 @@ Status mais recente: `OK`.
 
 Proxima frente prevista:
 
-- parcelas subdivididas em DIC e DBC, mantendo o mesmo padrao de API.
+- parcelas subdivididas em DIC e DBC, com fatorial na parcela ou na subparcela
+- parcelas subsubdivididas em DIC e DBC, mantendo o mesmo padrao de API.
 
 ## Autor
 

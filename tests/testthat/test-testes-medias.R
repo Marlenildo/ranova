@@ -45,3 +45,43 @@ test_that("parcelas subdivididas reproduzem o ExpDes.pt", {
   aj_dic <- ranova_ajuste(p, "y", c("A", "B"), "PSDIC", repeticao = "rep")
   expect_equal(round(ranova_anova(aj_dic)$F[1], 3), 14.052)
 })
+
+dados_tres_fatores <- function() {
+  set.seed(11)
+  d <- expand.grid(bloco = factor(1:4), A = factor(c("a1", "a2")), B = factor(c("b1", "b2", "b3")), C = factor(c("c1", "c2", "c3")))
+  ea <- stats::rnorm(24, 0, 1.5)
+  names(ea) <- levels(interaction(d$bloco, d$A, d$B))
+  invisible(stats::rnorm(72, 0, 0.8)) # mesmo sorteio do script de conferência
+  d$y <- 20 + 2 * as.numeric(d$A) + as.numeric(d$B) + 1.5 * as.numeric(d$C) + (d$A == "a2") * (d$C == "c3") * 2 +
+    ea[as.character(interaction(d$bloco, d$A, d$B))] + stats::rnorm(nrow(d), 0, 1)
+  d
+}
+
+test_that("fatorial na parcela reproduz aov com Error()", {
+  aj <- ranova_ajuste(dados_tres_fatores(), "y", c("A", "B", "C"), "PSDBC", bloco = "bloco", estratos = c(1, 1, 2))
+  tab <- ranova_anova(aj)
+  expect_equal(tab$FV, c("bloco", "A", "B", "A:B", "Erro (a)", "C", "A:C", "B:C", "A:B:C", "Erro (b)"))
+  expect_equal(round(tab$F[tab$FV == "A"], 3), 66.117)
+  expect_equal(round(tab$F[tab$FV == "A:C"], 3), 5.346)
+})
+
+test_that("parcelas subsubdivididas reproduzem agricolae::ssp.plot", {
+  aj <- ranova_ajuste(dados_tres_fatores(), "y", c("A", "B", "C"), "PSSDBC", bloco = "bloco")
+  tab <- ranova_anova(aj)
+  expect_equal(tab$GL[tab$FV %in% c("Erro (a)", "Erro (b)", "Erro (c)")], c(3, 12, 36))
+  expect_equal(round(tab$F[tab$FV == "A"], 4), 45.4758)
+  expect_equal(round(tab$F[tab$FV == "B"], 4), 3.7095)
+  expect_equal(round(unname(attr(tab, "cv")), 1), c(7.5, 5.8, 3.2))
+  a_em_c <- ranova_medias(aj, "A", dentro = "C")
+  expect_equal(round(attr(a_em_c, "qm"), 4), 1.9622)
+  expect_equal(round(attr(a_em_c, "gl"), 3), 5.472)
+})
+
+test_that("fatorial na subparcela em DIC reproduz aov com Error()", {
+  d <- dados_tres_fatores()
+  names(d)[1] <- "rep"
+  aj <- ranova_ajuste(d, "y", c("A", "B", "C"), "PSDIC", repeticao = "rep", estratos = c(1, 2, 2))
+  tab <- ranova_anova(aj)
+  expect_equal(round(tab$F[tab$FV == "A"], 2), 69.65)
+  expect_equal(tab$GL[tab$FV == "Erro (b)"], 48)
+})
