@@ -2,7 +2,7 @@
 % Please edit documentation in R/06_funcoes_modelo_fatorial_medias.R
 \name{tabela_interacao_fatorial_multivariaveis}
 \alias{tabela_interacao_fatorial_multivariaveis}
-\title{Desdobra interacao fatorial para varias respostas}
+\title{Desdobra a interacao para varias respostas}
 \usage{
 tabela_interacao_fatorial_multivariaveis(
   dados,
@@ -16,7 +16,7 @@ tabela_interacao_fatorial_multivariaveis(
   digitos = 2,
   alpha = 0.05,
   tipo_se = c("modelo", "descritivo"),
-  caption = "Desdobramento da interação fatorial."
+  caption = "Desdobramento da interação."
 )
 }
 \arguments{
@@ -48,5 +48,5 @@ tabela_interacao_fatorial_multivariaveis(
 Objeto \code{knitr_kable}.
 }
 \description{
-Desdobra interacao fatorial para varias respostas
+Desdobra a interacao para varias respostas
 }

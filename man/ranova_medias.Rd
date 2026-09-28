@@ -46,6 +46,6 @@ usando o quadrado medio e os graus de liberdade corretos para o
 delineamento. Em parcelas subdivididas, o fator da parcela usa o erro (a);
 o fator da subparcela, o erro (b); e o fator da parcela dentro de cada nivel
 da subparcela, o erro combinado com graus de liberdade de Satterthwaite
-(a mesma regra vale para fatorial na parcela e para parcelas
-subsubdivididas, estrato a estrato).
+(a mesma regra vale para o esquema fatorial nas parcelas ou nas
+subparcelas e para parcelas subsubdivididas, estrato a estrato).
 }

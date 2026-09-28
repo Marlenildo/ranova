@@ -2,14 +2,14 @@
 # 07_funcoes_utilitarias.R
 # Funcoes genericas de apoio e utilidades
 #
-# ?? Estas funcoes NAO ajustam modelos estatisticos.
+# Atencao: estas funcoes NAO ajustam modelos estatisticos.
 # Sao utilitarios para inspecao, organizacao e preparacao
 # de dados para tabelas, graficos e relatorios.
 # =========================================================
 
 
 # ---------------------------------------------------------
-# 1?? Remover colunas que contem QUALQUER valor NA
+# 1. Remover colunas que contem QUALQUER valor NA
 #
 # Mantem apenas colunas completamente observadas (100% sem NA).
 #
@@ -18,7 +18,7 @@
 # - visualizacao de dados
 # - exportacao de bancos "limpos"
 #
-# ?? Nao recomendado para uso direto em ANOVA ou modelos,
+# Atencao: nao recomendado para uso direto em ANOVA ou modelos,
 # pois pode alterar a estrutura experimental.
 # ---------------------------------------------------------
 #' Remove colunas com qualquer valor ausente
@@ -34,7 +34,7 @@ remove_colunas_com_na <- function(dados) {
 
 
 # ---------------------------------------------------------
-# 2?? Selecionar apenas colunas que POSSUEM algum NA
+# 2. Selecionar apenas colunas que POSSUEM algum NA
 #
 # Retorna somente as colunas que apresentam pelo menos
 # um valor ausente (NA).
@@ -57,7 +57,7 @@ seleciona_colunas_com_na <- function(dados) {
 
 
 # ---------------------------------------------------------
-# 3?? Remover apenas colunas TOTALMENTE vazias (todos NA)
+# 3. Remover apenas colunas TOTALMENTE vazias (todos NA)
 #
 # Mantem colunas que tem ao menos um valor observado.
 #
@@ -65,7 +65,7 @@ seleciona_colunas_com_na <- function(dados) {
 # - algumas variaveis nao foram medidas
 # - existem colunas "placeholder" no banco
 #
-# ?? Mais seguro que remove_colunas_com_na()
+# Obs.: mais seguro que remove_colunas_com_na()
 # ---------------------------------------------------------
 #' Remove colunas totalmente ausentes
 #'
@@ -80,7 +80,7 @@ remove_colunas_todas_na <- function(dados) {
 
 
 # ---------------------------------------------------------
-# 4?? Listar nomes das colunas que possuem NA
+# 4. Listar nomes das colunas que possuem NA
 #
 # Retorna um vetor de caracteres com os nomes das colunas
 # que apresentam pelo menos um valor ausente.
@@ -99,7 +99,7 @@ colunas_com_na <- function(dados) {
 
 
 # ---------------------------------------------------------
-# 5?? Manter colunas especificas + colunas com algum NA
+# 5. Manter colunas especificas + colunas com algum NA
 #
 # Mantem:
 # - todas as colunas explicitamente informadas pelo usuario

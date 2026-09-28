@@ -13,10 +13,10 @@
 #' @format Vetor nomeado de caracteres.
 #' @export
 TESTES_MEDIAS <- c(
-  "auto" = "Automático (t para 2 níveis, Tukey para 3 ou mais)",
+  "auto" = "Autom\u00E1tico (t para 2 n\u00EDveis, Tukey para 3 ou mais)",
   "tukey" = "Tukey",
   "t" = "t (LSD de Fisher)",
-  "bonferroni" = "t com correção de Bonferroni",
+  "bonferroni" = "t com corre\u00E7\u00E3o de Bonferroni",
   "duncan" = "Duncan",
   "snk" = "Student-Newman-Keuls (SNK)",
   "scott-knott" = "Scott-Knott",
@@ -63,7 +63,7 @@ letras_teste <- function(medias, n, qm, gl, teste = "auto", alpha = 0.05, contro
   if (is.null(names(medias))) names(medias) <- seq_along(medias)
   k <- length(medias)
   teste <- teste_efetivo(teste, k)
-  if (!teste %in% names(TESTES_MEDIAS)) stop("Teste de médias desconhecido: ", teste, call. = FALSE)
+  if (!teste %in% names(TESTES_MEDIAS)) stop("Teste de m\u00E9dias desconhecido: ", teste, call. = FALSE)
   conjunto <- if (maiusculas) LETTERS else letters
   if (k < 2 || !is.finite(qm) || qm <= 0) return(stats::setNames(rep(conjunto[1], k), names(medias)))
 

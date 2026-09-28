@@ -1,7 +1,10 @@
 #' ranova: Analise de Variancia para Experimentos
 #'
-#' Ferramentas para ajustar modelos fatoriais (DIC e DBC), gerar ANOVA,
-#' tabelas de medias, diagnostico de pressupostos e graficos para relatorios.
+#' Ferramentas para ajustar experimentos simples e em esquema fatorial (DIC e
+#' DBC), em parcelas subdivididas e subsubdivididas, gerar ANOVA, testes de
+#' medias, desdobramentos, diagnostico de pressupostos, tabelas e graficos
+#' para relatorios. O motor principal e [ranova_ajuste()], com
+#' [ranova_anova()] e [ranova_medias()].
 #'
 #' @importFrom graphics par
 #' @importFrom rlang .data sym

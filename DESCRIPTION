@@ -1,17 +1,19 @@
 Package: ranova
-Title: Analise De Variancia Para Experimentos Fatoriais e Em Parcelas Subdivididas
-Version: 0.6.0
+Title: Analise de Variancia de Experimentos Simples, Fatoriais e em Parcelas Subdivididas
+Version: 0.6.1
 Authors@R: 
     person(given = "Marlenildo",
            family = "Ferreira Melo",
            role = c("aut", "cre"),
-           email = "marlenildo@example.com")
-Description: Biblioteca para analise de variancia (ANOVA) em experimentos
-    com suporte a delineamento inteiramente casualizado (DIC) e delineamento
-    em blocos casualizados (DBC), incluindo modelos fatoriais, parcelas
-    subdivididas (com fatorial na parcela ou na subparcela), parcelas
-    subsubdivididas, diagnostico de pressupostos, testes de medias (Tukey, t,
-    Bonferroni, Duncan, SNK, Scott-Knott e Dunnett), tabelas de medias,
+           email = "marlenildo@gmail.com")
+Description: Biblioteca para analise de variancia (ANOVA) de experimentos
+    em delineamento inteiramente casualizado (DIC) e em blocos casualizados
+    (DBC): experimentos simples (um fator), em esquema fatorial (dois ou tres
+    fatores), em parcelas subdivididas (inclusive com esquema fatorial nas
+    parcelas ou nas subparcelas) e em parcelas subsubdivididas, com o erro
+    correto para cada teste F e cada comparacao. Inclui diagnostico de
+    pressupostos, testes de medias (Tukey, t, Bonferroni, Duncan, SNK,
+    Scott-Knott e Dunnett), desdobramento de interacoes, tabelas de medias,
     graficos e utilitarios para relatorios.
 License: MIT + file LICENSE
 Encoding: UTF-8

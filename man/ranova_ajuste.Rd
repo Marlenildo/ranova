@@ -2,7 +2,7 @@
 % Please edit documentation in R/08_ajuste_ranova.R
 \name{ranova_ajuste}
 \alias{ranova_ajuste}
-\title{Ajusta o modelo de um experimento fatorial, em parcelas subdivididas ou subsubdivididas}
+\title{Ajusta o modelo de um experimento simples, fatorial, em parcelas subdivididas ou subsubdivididas}
 \usage{
 ranova_ajuste(
   dados,
@@ -43,11 +43,13 @@ o erro desse estrato.
 }
 \details{
 \itemize{
-\item \code{"DIC"} e \code{"DBC"}: fatorial com 1 a 3 fatores, um unico erro (residuo).
+\item \code{"DIC"} e \code{"DBC"}: experimento simples (1 fator) ou em esquema fatorial
+(2 ou 3 fatores sorteados juntos), com um unico erro (residuo).
 \item \code{"PSDIC"} e \code{"PSDBC"}: parcelas subdivididas, erros (a) e (b). Com dois
-fatores, o primeiro fica na parcela e o segundo na subparcela; com tres,
-informe \code{estratos} (por exemplo, \code{c(1, 1, 2)} para fatorial na parcela ou
-\code{c(1, 2, 2)} para fatorial na subparcela).
+fatores, o primeiro fica na parcela e o segundo na subparcela (parcelas
+subdivididas, sem esquema fatorial); com tres, informe \code{estratos} (por
+exemplo, \code{c(1, 1, 2)} para esquema fatorial nas parcelas ou \code{c(1, 2, 2)}
+para esquema fatorial nas subparcelas).
 \item \code{"PSSDIC"} e \code{"PSSDBC"}: parcelas subsubdivididas com tres fatores
 (parcela, subparcela e subsubparcela), erros (a), (b) e (c).
 }

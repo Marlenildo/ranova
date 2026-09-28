@@ -2,7 +2,7 @@
 % Please edit documentation in R/06_funcoes_modelo_fatorial_medias.R
 \name{tabela_medias_fatorial}
 \alias{tabela_medias_fatorial}
-\title{Monta tabela de medias fatoriais}
+\title{Monta tabela de medias com letras}
 \usage{
 tabela_medias_fatorial(
   dados,
@@ -42,5 +42,5 @@ tabela_medias_fatorial(
 Objeto \code{knitr_kable}.
 }
 \description{
-Monta tabela de medias fatoriais
+Monta tabela de medias com letras
 }

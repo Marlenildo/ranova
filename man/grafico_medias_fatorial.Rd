@@ -2,7 +2,7 @@
 % Please edit documentation in R/05_funcoes_graficos.R
 \name{grafico_medias_fatorial}
 \alias{grafico_medias_fatorial}
-\title{Grafico de medias fatoriais com letras de comparacao}
+\title{Grafico de medias com letras de comparacao}
 \usage{
 grafico_medias_fatorial(
   dados,
@@ -36,5 +36,5 @@ grafico_medias_fatorial(
 Objeto \code{ggplot2}.
 }
 \description{
-Grafico de medias fatoriais com letras de comparacao
+Grafico de medias com letras de comparacao
 }

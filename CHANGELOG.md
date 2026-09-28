@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.1] - 2026-09-28
+
+### Changed
+- Documentação com a nomenclatura correta: **experimento simples** (1 fator), **esquema fatorial** (2 ou 3 fatores sorteados juntos), **parcelas subdivididas** (1 fator nas parcelas e 1 nas subparcelas, sem "fatorial"), **esquema fatorial nas parcelas/subparcelas** (só quando 2 fatores são combinados naquele nível) e **parcelas subsubdivididas**.
+- README reescrito, com acentuação, tabela de nomenclatura e exemplos de `ranova_ajuste()`, `ranova_anova()` e `ranova_medias()`; removidos o roadmap já concluído e a instalação por um `.tar.gz` antigo.
+- Título e descrição do pacote (`DESCRIPTION`) atualizados; e-mail do mantenedor corrigido.
+
+### Fixed
+- Comentários com acentuação corrompida em `R/06_funcoes_modelo_fatorial_medias.R` e símbolos perdidos em `R/05_funcoes_graficos.R` e `R/07_funcoes_utilitarias.R`.
+
 ## [0.6.0] - 2026-09-28
 
 ### Added

@@ -1,7 +1,7 @@
 # =========================================================
 # 05_funcoes_graficos.R
 #
-# Funcoes graficas reutilizaveis para experimentos fatoriais
+# Funcoes graficas reutilizaveis para experimentos simples e fatoriais
 #
 # PRINCIPIO ARQUITETURAL:
 # - Este arquivo NAO conhece variaveis experimentais
@@ -9,9 +9,9 @@
 # - Todas as funcoes usam resolve_var_label()
 #
 # Compativel com:
-# ?? DIC e DBC
-# ?? 1, 2 ou n fatores
-# ?? Relatorios HTML, PDF, Shiny
+# - DIC e DBC
+# - 1, 2 ou n fatores
+# - Relatorios HTML, PDF, Shiny
 #
 # Depende de:
 # - ggplot2
@@ -24,7 +24,7 @@
 
 
 # =========================================================
-# 1?? Grafico simples: media ? erro-padrao
+# 1. Grafico simples: media +- erro-padrao
 #
 # Usado quando os dados ja estao resumidos (mean, se),
 # normalmente apos summarise().
@@ -80,7 +80,7 @@ grafico_media_ep <- function(
 
 
 # =========================================================
-# 2?? Painel com multiplas variaveis
+# 2. Painel com multiplas variaveis
 #
 # Combina varios graficos de media ? EP em um layout unico
 # =========================================================
@@ -148,11 +148,11 @@ grafico_multiplas_variaveis <- function(
 
 
 # =========================================================
-# 3?? Grafico de medias fatoriais com letras (CLD)
+# 3. Grafico de medias fatoriais com letras (CLD)
 #
 # Usa o MESMO modelo da ANOVA
 # =========================================================
-#' Grafico de medias fatoriais com letras de comparacao
+#' Grafico de medias com letras de comparacao
 #'
 #' @param dados `data.frame` com os dados experimentais.
 #' @param resposta Nome da variavel resposta.
@@ -221,7 +221,7 @@ grafico_medias_fatorial <- function(
 
 
 # =========================================================
-# 4?? Grafico de interacao fatorial
+# 4. Grafico de interacao fatorial
 #
 # Representa medias ajustadas para dois fatores
 # =========================================================
