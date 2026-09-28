@@ -1,6 +1,6 @@
 Package: ranova
-Title: Analise De Variancia Para Experimentos Em DIC e DBC
-Version: 0.4.5
+Title: Analise De Variancia Para Experimentos Fatoriais e Em Parcelas Subdivididas
+Version: 0.5.0
 Authors@R: 
     person(given = "Marlenildo",
            family = "Ferreira Melo",
@@ -8,8 +8,10 @@ Authors@R:
            email = "marlenildo@example.com")
 Description: Biblioteca para analise de variancia (ANOVA) em experimentos
     com suporte a delineamento inteiramente casualizado (DIC) e delineamento
-    em blocos casualizados (DBC), incluindo modelos fatoriais, diagnostico de
-    pressupostos, tabelas de medias, graficos e utilitarios para relatorios.
+    em blocos casualizados (DBC), incluindo modelos fatoriais, parcelas
+    subdivididas, diagnostico de pressupostos, testes de medias (Tukey, t,
+    Bonferroni, Duncan, SNK, Scott-Knott e Dunnett), tabelas de medias,
+    graficos e utilitarios para relatorios.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -28,6 +30,7 @@ Imports:
     knitr,
     multcomp,
     multcompView,
+    mvtnorm,
     purrr,
     rlang,
     rstatix,

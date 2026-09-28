@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0] - 2026-09-28
+
+### Added
+- `ranova_ajuste()`: ajuste para fatoriais em DIC e DBC e para **parcelas subdivididas** em DIC (`"PSDIC"`, com coluna de repeticao) e DBC (`"PSDBC"`), guardando o erro (a) e o erro (b).
+- `ranova_anova()`: quadro da ANOVA com os testes F corretos (bloco e fator da parcela contra o erro (a)) e CV(s).
+- `ranova_medias()`: medias com letras para efeitos principais e desdobramentos, com o erro correto para cada comparacao (em parcelas subdivididas, erro combinado com graus de liberdade de Satterthwaite para o fator da parcela dentro da subparcela).
+- `letras_teste()` e `TESTES_MEDIAS`: testes de Tukey, t (LSD), Bonferroni, Duncan, SNK, Scott-Knott e Dunnett.
+- Testes automatizados (`testthat`) com valores de referencia conferidos com agricolae e ExpDes.pt.
+
 ## [0.4.5] - 2026-09-27
 
 ### Changed

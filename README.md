@@ -17,6 +17,8 @@ Escopo atual:
 
 - DIC e DBC
 - 1, 2, 3 ou mais fatores
+- parcelas subdivididas em DIC e DBC
+- testes de medias: Tukey, t (LSD), Bonferroni, Duncan, SNK, Scott-Knott e Dunnett
 - numero livre de niveis por fator
 
 ## Instalacao
@@ -114,6 +116,28 @@ anova_fatorial_qm_tabela(
 )
 ```
 
+## Parcelas subdivididas e outros testes de medias
+
+```r
+# Fator 1 na parcela, fator 2 na subparcela (DBC)
+ajuste <- ranova_ajuste(dados, "prod", c("irrigacao", "cultivar"), "PSDBC", bloco = "bloco")
+ranova_anova(ajuste)              # erro (a), erro (b), CV a e CV b
+
+# Medias com letras pelo teste escolhido
+ranova_medias(ajuste, "irrigacao", teste = "tukey")                     # erro (a)
+ranova_medias(ajuste, "cultivar", dentro = "irrigacao", teste = "scott-knott")  # erro (b)
+ranova_medias(ajuste, "irrigacao", dentro = "cultivar", teste = "duncan")      # erro combinado (Satterthwaite)
+
+# No DIC, informe a coluna que identifica a parcela (repeticao)
+ranova_ajuste(dados, "prod", c("irrigacao", "cultivar"), "PSDIC", repeticao = "rep")
+
+# Testes disponiveis
+TESTES_MEDIAS
+letras_teste(c(A = 10, B = 12, C = 15), n = 4, qm = 2, gl = 12, teste = "snk")
+```
+
+Os resultados foram conferidos com `agricolae` (Tukey, t, Bonferroni, Duncan e SNK) e `ExpDes.pt` (Scott-Knott e parcelas subdivididas, inclusive o erro combinado).
+
 ## Interacao fatorial
 
 ```r
@@ -207,6 +231,8 @@ Opcoes de `label_type`: `"var"`, `"sigla"`, `"label"` ou `"description"`.
 
 ### Modelagem e inferencia
 
+- `ranova_ajuste()`, `ranova_anova()`, `ranova_medias()`
+- `letras_teste()`, `TESTES_MEDIAS`
 - `ajusta_modelo_fatorial()`
 - `anova_fatorial_qm_tabela()`
 - `medias_fatorial_cld()`
